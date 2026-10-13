@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ember & Bean Cafe | Digital Menu</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7f4ee;
+  color: #261e18;
+}
+
+header {
+  padding: 55px 22px;
+  color: white;
+  background:
+    linear-gradient(90deg, #17120fe8, #17120f70),
+    url("https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1400&q=80")
+    center/cover;
+}
+
+header small {
+  color: #e8b48c;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+h1 {
+  font-family: Georgia, serif;
+  font-size: clamp(42px, 8vw, 68px);
+  margin: 15px 0;
+}
+
+header p { max-width: 480px; line-height: 1.7; }
+
+.demo {
+  display: inline-block;
+  border: 1px solid #e8b48c;
+  border-radius: 20px;
+  padding: 8px 12px;
+  color: #ffe0c2;
+  font-size: 12px;
+}
+
+main { max-width: 1000px; margin: auto; padding: 25px 16px 45px; }
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+h2 { font-family: Georgia, serif; font-size: 34px; }
+
+input {
+  padding: 13px;
+  border: 1px solid #ded4c7;
+  border-radius: 10px;
+  font-size: 16px;
+  max-width: 100%;
+}
+
+.categories {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 0 20px;
+}
+
+.categories button {
+  padding: 11px 16px;
+  border: 1px solid #ded4c7;
+  border-radius: 25px;
+  background: white;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.categories button.active {
+  background: #261e18;
+  color: white;
+}
+
+.menu {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 17px;
+}
+
+.card {
+  background: white;
+  border: 1px solid #e8dfd4;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.card img {
+  width: 100%;
+  height: 175px;
+  object-fit: cover;
+  display: block;
+}
+
+.details { padding: 14px; }
+
+.category {
+  color: #ad6338;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.nameprice {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.name { font-weight: bold; line-height: 1.4; }
+.price { color: #ad6338; font-weight: bold; white-space: nowrap; }
+
+.description {
+  color: #766b60;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notice {
+  margin: 25px 0;
+  color: #766b60;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+footer {
+  background: #261e18;
+  color: #eee1d4;
+  text-align: center;
+  padding: 25px;
+  font-size: 13px;
+}
+
+@media (max-width: 700px) {
+  .menu { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card img { height: 140px; }
+}
+
+@media (max-width: 420px) {
+  .menu { grid-template-columns: 1fr; }
+  .card img { height: 200px; }
+}
+</style>
+</head>
+
+<body>
+<header>
+  <small>Coffee · Comfort · Good Moments</small>
+  <h1>Ember & Bean<br>Café</h1>
+  <p>Thoughtfully brewed coffee, fresh bites, and little moments worth slowing down for.</p>
+  <span class="demo">SAMPLE MENU · FICTIONAL CAFÉ</span>
+</header>
+
+<main>
+  <div class="top">
+    <div>
+      <h2>Our Menu</h2>
+      <p>Fresh favourites, made for your moment.</p>
+    </div>
+    <input id="search" placeholder="Search menu..." aria-label="Search menu">
+  </div>
+
+  <div class="categories" id="categories">
+    <button class="active" data-category="All">All items</button>
+    <button data-category="Coffee">Coffee</button>
+    <button data-category="Cold Drinks">Cold Drinks</button>
+    <button data-category="Food">Food</button>
+    <button data-category="Desserts">Desserts</button>
+  </div>
+
+  <div class="menu" id="menu"></div>
+  <p id="empty" hidden>No items found.</p>
+
+  <p class="notice">
+    DEMO ONLY: These dishes, prices and photos are samples.
+    Replace them with the restaurant's approved menu before selling
+    or publishing this page for a real restaurant.
+  </p>
+</main>
+
+<footer>
+  <strong>Ember & Bean Café</strong>
+  <p>Digital menu demo by MRGhost Works</p>
+  Sample prices for demonstration only.
+</footer>
+
+<script>
+// EDIT THIS LIST to change the restaurant's menu.
+const items = [
+  {
+    name: "Signature Cappuccino",
+    category: "Coffee",
+    price: 149,
+    description: "Rich espresso with silky steamed milk.",
+    image: "https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Classic Latte",
+    category: "Coffee",
+    price: 159,
+    description: "Smooth espresso balanced with creamy milk.",
+    image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Americano",
+    category: "Coffee",
+    price: 119,
+    description: "Bold espresso softened with hot water.",
+    image: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Iced Mocha",
+    category: "Cold Drinks",
+    price: 189,
+    description: "Chilled coffee, chocolate and milk over ice.",
+    image: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Fresh Lemonade",
+    category: "Cold Drinks",
+    price: 99,
+    description: "Refreshing lemon with a hint of sweetness.",
+    image: "https://images.unsplash.com/photo-1513558161293-cdaf765edfd7?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Grilled Cheese Toastie",
+    category: "Food",
+    price: 179,
+    description: "Golden toasted bread with melted cheese.",
+    image: "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Butter Croissant",
+    category: "Food",
+    price: 129,
+    description: "Flaky, buttery pastry baked until golden.",
+    image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Chocolate Brownie",
+    category: "Desserts",
+    price: 139,
+    description: "Rich chocolate with a soft, fudgy centre.",
+    image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&w=800&q=80"
+  },
+  {
+    name: "Cheesecake",
+    category: "Desserts",
+    price: 199,
+    description: "Creamy cheesecake on a buttery biscuit base.",
+    image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=800&q=80"
+  }
+];
+
+let activeCategory = "All";
+
+function renderMenu() {
+  const query = document.getElementById("search").value.toLowerCase().trim();
+
+  const filtered = items.filter(item => {
+    const matchesCategory =
+      activeCategory === "All" || item.category === activeCategory;
+
+    const matchesSearch =
+      (item.name + " " + item.description + " " + item.category)
+        .toLowerCase().includes(query);
+
+    return matchesCategory && matchesSearch;
+  });
+
+  document.getElementById("menu").innerHTML = filtered.map(item => `
+    <article class="card">
+      <img src="${item.image}" alt="${item.name}" loading="lazy">
+      <div class="details">
+        <div class="category">${item.category}</div>
+        <div class="nameprice">
+          <div class="name">${item.name}</div>
+          <div class="price">₹${item.price}</div>
+        </div>
+        <p class="description">${item.description}</p>
+      </div>
+    </article>
+  `).join("");
+
+  document.getElementById("empty").hidden = filtered.length > 0;
+}
+
+document.querySelectorAll("[data-category]").forEach(button => {
+  button.addEventListener("click", () => {
+    activeCategory = button.dataset.category;
+
+    document.querySelectorAll("[data-category]").forEach(tab => {
+      tab.classList.toggle("active", tab === button);
+    });
+
+    renderMenu();
+  });
+});
+
+document.getElementById("search").addEventListener("input", renderMenu);
+
+renderMenu();
+</script>
+</body>
+</html>
